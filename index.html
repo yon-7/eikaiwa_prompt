@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT英会話プロンプト生成器</title>
+    <style>
+        body { font-family: "Helvetica Neue", Arial, sans-serif; background: #f4f4f9; color: #333; padding: 20px; max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 1.5em; color: #444; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.9em; }
+        select, input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .hidden { display: none; }
+        .radio-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .radio-label { flex: 1; text-align: center; padding: 10px; background: #e0e0e0; border-radius: 8px; cursor: pointer; user-select: none; }
+        input[type="radio"] { display: none; }
+        input[type="radio"]:checked + .radio-label { background: #007bff; color: white; font-weight: bold; }
+        textarea { width: 100%; height: 250px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: #fafafa; font-family: monospace; font-size: 14px; box-sizing: border-box; resize: none; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 1.1em; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #218838; }
+        .checkbox-wrapper { margin-top: 15px; display: flex; align-items: center; }
+        .checkbox-wrapper input { width: auto; margin-right: 10px; transform: scale(1.2); }
+    </style>
+</head>
+<body>
+
+    <h1>ChatGPT英会話プロンプト生成</h1>
+
+    <!-- モード選択 -->
+    <div class="radio-group">
+        <label>
+            <input type="radio" name="mode" value="roleplay" checked onchange="toggleMode()">
+            <span class="radio-label">ロールプレイ</span>
+        </label>
+        <label>
+            <input type="radio" name="mode" value="freetalk" onchange="toggleMode()">
+            <span class="radio-label">フリートーク</span>
+        </label>
+    </div>
+
+    <div class="card" id="form-container">
+        
+        <!-- ロールプレイ専用項目 -->
+        <div id="roleplay-fields">
+            <label>シチュエーション (場面)</label>
+            <select id="situation" onchange="checkCustom('situation')">
+                <option value="Ordering a coffee at a cafe">カフェで注文</option>
+                <option value="Checking in at a hotel">ホテルのチェックイン</option>
+                <option value="Immigration control at the airport">空港の入国審査</option>
+                <option value="Buying souvenirs at a gift shop">お土産屋での買い物</option>
+                <option value="Asking for directions">道案内を聞く</option>
+                <option value="Job interview">就職面接</option>
+                <option value="custom">その他 (自由入力)</option>
+            </select>
+            <input type="text" id="situation-custom" class="hidden" placeholder="例: 病院で症状を説明する">
+
+            <label>相手(AI)の役割</label>
+            <select id="ai-role" onchange="checkCustom('ai-role')">
+                <option value="Friendly Staff">フレンドリーな店員</option>
+                <option value="Serious Officer">厳格な係員</option>
+                <option value="Kind Stranger">親切な通行人</option>
+                <option value="Interviewer">面接官</option>
+                <option value="Doctor">医者</option>
+                <option value="custom">その他 (自由入力)</option>
+            </select>
+            <input type="text" id="ai-role-custom" class="hidden" placeholder="例: 近所の住人">
+
+            <label>自分の役割</label>
+            <select id="my-role" onchange="checkCustom('my-role')">
+                <option value="Customer/Tourist">客 / 観光客</option>
+                <option value="Lost Person">道に迷った人</option>
+                <option value="Patient">患者</option>
+                <option value="Student">生徒</option>
+                <option value="custom">その他 (自由入力)</option>
+            </select>
+            <input type="text" id="my-role-custom" class="hidden" placeholder="例: クレームを言う客">
+        </div>
+
+        <!-- フリートーク専用項目 -->
+        <div id="freetalk-fields" class="hidden">
+            <label>トークテーマ</label>
+            <select id="topic" onchange="checkCustom('topic')">
+                <option value="My Hobbies">趣味について</option>
+                <option value="Recent Movies/Anime">最近見た映画・アニメ</option>
+                <option value="Travel experiences">旅行の体験</option>
+                <option value="Future technology">未来の技術について</option>
+                <option value="Daily news">最近のニュース</option>
+                <option value="custom">その他 (自由入力)</option>
+            </select>
+            <input type="text" id="topic-custom" class="hidden" placeholder="例: 日本の文化について">
+        </div>
+
+        <!-- 共通項目 -->
+        <label>自分の英語レベル</label>
+        <select id="level">
+            <option value="Beginner (uses simple words)">初級 (Beginner)</option>
+            <option value="Intermediate">中級 (Intermediate)</option>
+            <option value="Advanced">上級 (Advanced)</option>
+        </select>
+
+        <label>AIの話す速度 (ボイスモード時)</label>
+        <select id="speed">
+            <option value="slowly and clearly">ゆっくり (Slow)</option>
+            <option value="at natural speed">普通 (Natural)</option>
+            <option value="fast">早口 (Fast)</option>
+        </select>
+
+        <div class="checkbox-wrapper">
+            <input type="checkbox" id="voice-mode-check" checked onchange="generatePrompt()">
+            <label for="voice-mode-check" style="margin-top:0;">ボイスモード用待機コマンドを入れる</label>
+        </div>
+    </div>
+
+    <!-- 結果表示 -->
+    <div class="card">
+        <label style="margin-top:0">生成されたプロンプト (コピーしてChatGPTに貼り付け)</label>
+        <textarea id="output" readonly></textarea>
+        <button onclick="copyToClipboard()">📋 コピーする</button>
+    </div>
+
+    <script>
+        function toggleMode() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            if (mode === 'roleplay') {
+                document.getElementById('roleplay-fields').classList.remove('hidden');
+                document.getElementById('freetalk-fields').classList.add('hidden');
+            } else {
+                document.getElementById('roleplay-fields').classList.add('hidden');
+                document.getElementById('freetalk-fields').classList.remove('hidden');
+            }
+            generatePrompt();
+        }
+
+        function checkCustom(id) {
+            const select = document.getElementById(id);
+            const input = document.getElementById(id + '-custom');
+            if (select.value === 'custom') {
+                input.classList.remove('hidden');
+            } else {
+                input.classList.add('hidden');
+            }
+            generatePrompt();
+        }
+
+        // 入力変更時に自動更新
+        document.querySelectorAll('select, input').forEach(el => {
+            el.addEventListener('input', generatePrompt);
+        });
+
+        function getValue(id) {
+            const select = document.getElementById(id);
+            if (select.value === 'custom') {
+                const input = document.getElementById(id + '-custom');
+                return input.value || "[未入力]";
+            }
+            return select.value;
+        }
+
+        function generatePrompt() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            const level = document.getElementById('level').value;
+            const speed = document.getElementById('speed').value;
+            const useVoiceMode = document.getElementById('voice-mode-check').checked;
+
+            let prompt = "";
+
+            if (mode === 'roleplay') {
+                const situation = getValue('situation');
+                const aiRole = getValue('ai-role');
+                const myRole = getValue('my-role');
+
+                prompt = `# Instruction
+I want to practice English conversation through role-playing.
+Please act according to the following settings.
+
+# Settings
+- **Situation**: ${situation}
+- **Your Role**: ${aiRole}
+- **My Role**: ${myRole}
+- **My English Level**: ${level}
+
+# Rules
+1. Speak naturally as your role.
+2. **Wait for my response** after every sentence.
+3. Keep your responses concise (1-3 sentences).
+4. If I make a mistake, please correct it briefly inside parentheses like this: (Correction: ...) after your reply.
+5. If using Voice Mode, please speak **${speed}**.`;
+
+            } else {
+                const topic = getValue('topic');
+
+                prompt = `# Instruction
+I want to have a free conversation about a specific topic to practice English.
+
+# Topic
+${topic}
+
+# Settings
+- **My English Level**: ${level}
+- **Speaking Style**: Friendly and casual.
+
+# Rules
+1. Ask me questions to keep the conversation going.
+2. Reply with only 1-3 sentences at a time.
+3. Correct my grammar or vocabulary mistakes at the end of your response politely.
+4. If using Voice Mode, please speak **${speed}**.`;
+            }
+
+            if (useVoiceMode) {
+                prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode and say "**Start**", then you speak the first sentence.`;
+            } else {
+                if (mode === 'roleplay') {
+                    prompt += `\n\nLet's start the role-play. You speak first.`;
+                } else {
+                    prompt += `\n\nLet's start. Please ask me the first question about the topic.`;
+                }
+            }
+
+            document.getElementById('output').value = prompt;
+        }
+
+        function copyToClipboard() {
+            const copyText = document.getElementById("output");
+            copyText.select();
+            document.execCommand("copy");
+            alert("プロンプトをコピーしました！ChatGPTに貼り付けてください。");
+        }
+
+        // 初期化
+        generatePrompt();
+    </script>
+
+</body>
+</html>
