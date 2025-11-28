@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英会話プロンプト作成</title>
     
-    <!-- スマホ用アイコン設定 (緑色の背景にEの文字) -->
+    <!-- スマホ用アイコン設定 -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2328a745'/><text x='50' y='70' font-family='Arial, sans-serif' font-weight='bold' font-size='70' fill='white' text-anchor='middle'>E</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2328a745'/><text x='50' y='70' font-family='Arial, sans-serif' font-weight='bold' font-size='70' fill='white' text-anchor='middle'>E</text></svg>">
 
@@ -39,11 +39,11 @@
     <!-- モード選択 -->
     <div class="radio-group">
         <label>
-            <input type="radio" name="mode" value="roleplay" checked onchange="toggleMode()">
+            <input type="radio" name="mode" value="roleplay" checked onchange="handleModeChange()">
             <span class="radio-label">ロールプレイ</span>
         </label>
         <label>
-            <input type="radio" name="mode" value="freetalk" onchange="toggleMode()">
+            <input type="radio" name="mode" value="freetalk" onchange="handleModeChange()">
             <span class="radio-label">フリートーク</span>
         </label>
     </div>
@@ -124,7 +124,7 @@
         </select>
 
         <div class="checkbox-wrapper">
-            <input type="checkbox" id="voice-mode-check" checked onchange="generatePrompt()">
+            <input type="checkbox" id="voice-mode-check" checked onchange="saveAndGenerate()">
             <label for="voice-mode-check" style="margin-top:0;">ボイスモード開始コマンドを入れる</label>
         </div>
     </div>
@@ -137,6 +137,17 @@
     </div>
 
     <script>
+        // 設定を保存してプロンプト生成
+        function saveAndGenerate() {
+            saveSettings();
+            generatePrompt();
+        }
+
+        function handleModeChange() {
+            toggleMode();
+            saveAndGenerate();
+        }
+
         function toggleMode() {
             const mode = document.querySelector('input[name="mode"]:checked').value;
             if (mode === 'roleplay') {
@@ -146,7 +157,6 @@
                 document.getElementById('roleplay-fields').classList.add('hidden');
                 document.getElementById('freetalk-fields').classList.remove('hidden');
             }
-            generatePrompt();
         }
 
         function checkCustom(id) {
@@ -157,11 +167,14 @@
             } else {
                 input.classList.add('hidden');
             }
-            generatePrompt();
+            saveAndGenerate();
         }
 
+        // イベントリスナー登録（入力があるたびに保存＆生成）
         document.querySelectorAll('select, input').forEach(el => {
-            el.addEventListener('input', generatePrompt);
+            if(el.type !== 'radio') { // ラジオボタンは別途処理
+                el.addEventListener('input', saveAndGenerate);
+            }
         });
 
         function getValue(id) {
@@ -246,7 +259,69 @@ ${topic}
             setTimeout(() => { btn.innerText = originalText; }, 2000);
         }
 
-        generatePrompt();
+        // --- 設定保存機能 (LocalStorage) ---
+
+        function saveSettings() {
+            // モード保存
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            localStorage.setItem('epg_mode', mode);
+
+            // チェックボックス保存
+            localStorage.setItem('epg_voice', document.getElementById('voice-mode-check').checked);
+
+            // 全入力欄保存
+            const ids = [
+                'situation', 'situation-custom',
+                'ai-role', 'ai-role-custom',
+                'my-role', 'my-role-custom',
+                'topic', 'topic-custom',
+                'level', 'speed'
+            ];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) localStorage.setItem('epg_' + id, el.value);
+            });
+        }
+
+        function loadSettings() {
+            // モード復元
+            const savedMode = localStorage.getItem('epg_mode');
+            if (savedMode) {
+                const radio = document.querySelector(`input[name="mode"][value="${savedMode}"]`);
+                if(radio) radio.checked = true;
+            }
+
+            // チェックボックス復元
+            const savedVoice = localStorage.getItem('epg_voice');
+            if (savedVoice !== null) {
+                document.getElementById('voice-mode-check').checked = (savedVoice === 'true');
+            }
+
+            // 入力欄復元
+            const ids = [
+                'situation', 'situation-custom',
+                'ai-role', 'ai-role-custom',
+                'my-role', 'my-role-custom',
+                'topic', 'topic-custom',
+                'level', 'speed'
+            ];
+            ids.forEach(id => {
+                const val = localStorage.getItem('epg_' + id);
+                if (val !== null) {
+                    const el = document.getElementById(id);
+                    if(el) el.value = val;
+                }
+            });
+
+            // 画面状態を更新
+            toggleMode();
+            ['situation', 'ai-role', 'my-role', 'topic'].forEach(id => checkCustom(id));
+            generatePrompt();
+        }
+
+        // ページ読み込み時に設定をロード
+        window.addEventListener('load', loadSettings);
+
     </script>
 
 </body>
