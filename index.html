@@ -3,28 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT英会話プロンプト生成器</title>
+    <title>英会話プロンプト作成</title>
+    
+    <!-- スマホ用アイコン設定 (緑色の背景にEの文字) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2328a745'/><text x='50' y='70' font-family='Arial, sans-serif' font-weight='bold' font-size='70' fill='white' text-anchor='middle'>E</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2328a745'/><text x='50' y='70' font-family='Arial, sans-serif' font-weight='bold' font-size='70' fill='white' text-anchor='middle'>E</text></svg>">
+
     <style>
-        body { font-family: "Helvetica Neue", Arial, sans-serif; background: #f4f4f9; color: #333; padding: 20px; max-width: 600px; margin: 0 auto; }
-        h1 { text-align: center; font-size: 1.5em; color: #444; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.9em; }
-        select, input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif; background: #f0f2f5; color: #333; padding: 15px; max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 1.4em; color: #444; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.9em; color: #555; }
+        select, input[type="text"] { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: #fff; -webkit-appearance: none; }
         .hidden { display: none; }
-        .radio-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        .radio-label { flex: 1; text-align: center; padding: 10px; background: #e0e0e0; border-radius: 8px; cursor: pointer; user-select: none; }
+        
+        /* タブ切り替えデザイン */
+        .radio-group { display: flex; background: #e4e6eb; border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+        .radio-label { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.95em; font-weight: bold; color: #65676b; transition: all 0.2s; }
         input[type="radio"] { display: none; }
-        input[type="radio"]:checked + .radio-label { background: #007bff; color: white; font-weight: bold; }
-        textarea { width: 100%; height: 250px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: #fafafa; font-family: monospace; font-size: 14px; box-sizing: border-box; resize: none; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 1.1em; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #218838; }
-        .checkbox-wrapper { margin-top: 15px; display: flex; align-items: center; }
-        .checkbox-wrapper input { width: auto; margin-right: 10px; transform: scale(1.2); }
+        input[type="radio"]:checked + .radio-label { background: #fff; color: #28a745; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        textarea { width: 100%; height: 200px; padding: 12px; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; font-family: monospace; font-size: 13px; box-sizing: border-box; resize: none; margin-top: 5px; }
+        
+        button { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2); transition: background 0.2s; }
+        button:active { transform: scale(0.98); }
+        
+        .checkbox-wrapper { margin-top: 20px; display: flex; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 8px; }
+        .checkbox-wrapper input { width: 20px; height: 20px; margin-right: 10px; accent-color: #28a745; }
     </style>
 </head>
 <body>
 
-    <h1>ChatGPT英会話プロンプト生成</h1>
+    <h1>🇬🇧 英会話プロンプト生成</h1>
 
     <!-- モード選択 -->
     <div class="radio-group">
@@ -44,15 +54,17 @@
         <div id="roleplay-fields">
             <label>シチュエーション (場面)</label>
             <select id="situation" onchange="checkCustom('situation')">
-                <option value="Ordering a coffee at a cafe">カフェで注文</option>
-                <option value="Checking in at a hotel">ホテルのチェックイン</option>
-                <option value="Immigration control at the airport">空港の入国審査</option>
-                <option value="Buying souvenirs at a gift shop">お土産屋での買い物</option>
-                <option value="Asking for directions">道案内を聞く</option>
-                <option value="Job interview">就職面接</option>
-                <option value="custom">その他 (自由入力)</option>
+                <option value="Ordering a coffee at a cafe">☕️ カフェで注文</option>
+                <option value="Checking in at a hotel">🏨 ホテルのチェックイン</option>
+                <option value="Immigration control at the airport">✈️ 空港の入国審査</option>
+                <option value="Buying souvenirs at a gift shop">🎁 お土産屋での買い物</option>
+                <option value="Asking for directions">🗺️ 道案内を聞く</option>
+                <option value="Job interview">👔 就職面接</option>
+                <option value="Restaurant reservation">🍽️ レストラン予約</option>
+                <option value="At the pharmacy">💊 薬局で相談</option>
+                <option value="custom">✍️ その他 (自由入力)</option>
             </select>
-            <input type="text" id="situation-custom" class="hidden" placeholder="例: 病院で症状を説明する">
+            <input type="text" id="situation-custom" class="hidden" placeholder="例: 美容院で髪型を注文する">
 
             <label>相手(AI)の役割</label>
             <select id="ai-role" onchange="checkCustom('ai-role')">
@@ -61,7 +73,7 @@
                 <option value="Kind Stranger">親切な通行人</option>
                 <option value="Interviewer">面接官</option>
                 <option value="Doctor">医者</option>
-                <option value="custom">その他 (自由入力)</option>
+                <option value="custom">✍️ その他 (自由入力)</option>
             </select>
             <input type="text" id="ai-role-custom" class="hidden" placeholder="例: 近所の住人">
 
@@ -71,7 +83,7 @@
                 <option value="Lost Person">道に迷った人</option>
                 <option value="Patient">患者</option>
                 <option value="Student">生徒</option>
-                <option value="custom">その他 (自由入力)</option>
+                <option value="custom">✍️ その他 (自由入力)</option>
             </select>
             <input type="text" id="my-role-custom" class="hidden" placeholder="例: クレームを言う客">
         </div>
@@ -85,37 +97,43 @@
                 <option value="Travel experiences">旅行の体験</option>
                 <option value="Future technology">未来の技術について</option>
                 <option value="Daily news">最近のニュース</option>
-                <option value="custom">その他 (自由入力)</option>
+                <option value="Career goals">仕事・キャリアの目標</option>
+                <option value="Japanese Culture">日本の文化説明</option>
+                <option value="custom">✍️ その他 (自由入力)</option>
             </select>
-            <input type="text" id="topic-custom" class="hidden" placeholder="例: 日本の文化について">
+            <input type="text" id="topic-custom" class="hidden" placeholder="例: 健康的な生活について">
         </div>
 
-        <!-- 共通項目 -->
-        <label>自分の英語レベル</label>
+        <!-- 共通項目：CEFRレベル -->
+        <label>英語レベル (CEFR基準)</label>
         <select id="level">
-            <option value="Beginner (uses simple words)">初級 (Beginner)</option>
-            <option value="Intermediate">中級 (Intermediate)</option>
-            <option value="Advanced">上級 (Advanced)</option>
+            <option value="A1 (Beginner)">A1 - 入門 (単語・挨拶レベル)</option>
+            <option value="A2 (Elementary)">A2 - 初級 (簡単な日常会話)</option>
+            <option value="B1 (Intermediate)">B1 - 中級 (旅行・仕事の基本)</option>
+            <option value="B2 (Upper Intermediate)">B2 - 中上級 (複雑な話題もOK)</option>
+            <option value="C1 (Advanced)">C1 - 上級 (流暢に議論可能)</option>
+            <option value="C2 (Proficiency)">C2 - 特級 (ネイティブ同等)</option>
         </select>
 
         <label>AIの話す速度 (ボイスモード時)</label>
         <select id="speed">
-            <option value="slowly and clearly">ゆっくり (Slow)</option>
-            <option value="at natural speed">普通 (Natural)</option>
-            <option value="fast">早口 (Fast)</option>
+            <option value="very slowly and clearly">🐢 とてもゆっくり</option>
+            <option value="slowly">🚶 ゆっくり</option>
+            <option value="at natural speed">🏃 普通 (ナチュラル)</option>
+            <option value="fast">🏎️ 早口 (上級者向け)</option>
         </select>
 
         <div class="checkbox-wrapper">
             <input type="checkbox" id="voice-mode-check" checked onchange="generatePrompt()">
-            <label for="voice-mode-check" style="margin-top:0;">ボイスモード用待機コマンドを入れる</label>
+            <label for="voice-mode-check" style="margin-top:0;">ボイスモード開始コマンドを入れる</label>
         </div>
     </div>
 
     <!-- 結果表示 -->
     <div class="card">
-        <label style="margin-top:0">生成されたプロンプト (コピーしてChatGPTに貼り付け)</label>
-        <textarea id="output" readonly></textarea>
-        <button onclick="copyToClipboard()">📋 コピーする</button>
+        <label style="margin-top:0">生成されたプロンプト</label>
+        <textarea id="output" readonly onclick="this.select()"></textarea>
+        <button onclick="copyToClipboard()">📋 プロンプトをコピー</button>
     </div>
 
     <script>
@@ -142,7 +160,6 @@
             generatePrompt();
         }
 
-        // 入力変更時に自動更新
         document.querySelectorAll('select, input').forEach(el => {
             el.addEventListener('input', generatePrompt);
         });
@@ -223,7 +240,11 @@ ${topic}
             const copyText = document.getElementById("output");
             copyText.select();
             document.execCommand("copy");
-            alert("プロンプトをコピーしました！ChatGPTに貼り付けてください。");
+            // ボタンの文字を一瞬変更する演出
+            const btn = document.querySelector("button");
+            const originalText = btn.innerText;
+            btn.innerText = "✅ コピー完了！";
+            setTimeout(() => { btn.innerText = originalText; }, 2000);
         }
 
         // 初期化
