@@ -18,8 +18,8 @@
         .hidden { display: none; }
         
         /* タブ切り替えデザイン */
-        .radio-group { display: flex; background: #e4e6eb; border-radius: 10px; padding: 4px; margin-bottom: 20px; }
-        .radio-label { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.95em; font-weight: bold; color: #65676b; transition: all 0.2s; }
+        .radio-group { display: flex; flex-wrap: wrap; background: #e4e6eb; border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+        .radio-label { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; color: #65676b; transition: all 0.2s; white-space: nowrap; }
         input[type="radio"] { display: none; }
         input[type="radio"]:checked + .radio-label { background: #fff; color: #28a745; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
@@ -27,6 +27,7 @@
         
         button { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2); transition: background 0.2s; }
         button:active { transform: scale(0.98); }
+        .reset-btn { background: #dc3545; box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2); }
         
         .checkbox-wrapper { margin-top: 20px; display: flex; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 8px; }
         .checkbox-wrapper input { width: 20px; height: 20px; margin-right: 10px; accent-color: #28a745; }
@@ -40,28 +41,35 @@
     <div class="radio-group">
         <label>
             <input type="radio" name="mode" value="roleplay" checked onchange="handleModeChange()">
-            <span class="radio-label">ロールプレイ</span>
+            <span class="radio-label">🎭 ロールプレイ</span>
         </label>
         <label>
             <input type="radio" name="mode" value="freetalk" onchange="handleModeChange()">
-            <span class="radio-label">フリートーク</span>
+            <span class="radio-label">🗣️ フリートーク</span>
+        </label>
+        <label>
+            <input type="radio" name="mode" value="translation" onchange="handleModeChange()">
+            <span class="radio-label">⚡️ 瞬間英作文</span>
         </label>
     </div>
 
     <div class="card" id="form-container">
         
-        <!-- ロールプレイ専用項目 -->
+        <!-- ロールプレイ専用項目 (ご指定の内容に差し替え済み) -->
         <div id="roleplay-fields">
             <label>シチュエーション (場面)</label>
             <select id="situation" onchange="checkCustom('situation')">
                 <option value="Ordering a coffee at a cafe">☕️ カフェで注文</option>
                 <option value="Checking in at a hotel">🏨 ホテルのチェックイン</option>
-                <option value="Immigration control at the airport">✈️ 空港の入国審査</option>
+                <option value="Restaurant reservation">🍽️ レストラン予約</option>
                 <option value="Buying souvenirs at a gift shop">🎁 お土産屋での買い物</option>
+                <option value="Immigration control at the airport">✈️ 空港の入国審査</option>
                 <option value="Asking for directions">🗺️ 道案内を聞く</option>
                 <option value="Job interview">👔 就職面接</option>
-                <option value="Restaurant reservation">🍽️ レストラン予約</option>
-                <option value="At the pharmacy">💊 薬局で相談</option>
+                <option value="At the pharmacy">💊 病院で相談</option>
+                <option value="Meeting someone new at a party">🥂 パーティーで初対面の人と話す</option>
+                <option value="Networking event (Business)">📇 ビジネス交流会で名刺交換</option>
+                <option value="Small talk in the elevator/park">🗣️ エレベーターや公園での世間話</option>
                 <option value="custom">✍️ その他 (自由入力)</option>
             </select>
             <input type="text" id="situation-custom" class="hidden" placeholder="例: 美容院で髪型を注文する">
@@ -73,6 +81,7 @@
                 <option value="Kind Stranger">親切な通行人</option>
                 <option value="Interviewer">面接官</option>
                 <option value="Doctor">医者</option>
+                <option value="Friendly Stranger">フレンドリーな知らない人</option>
                 <option value="custom">✍️ その他 (自由入力)</option>
             </select>
             <input type="text" id="ai-role-custom" class="hidden" placeholder="例: 近所の住人">
@@ -82,7 +91,7 @@
                 <option value="Customer/Tourist">客 / 観光客</option>
                 <option value="Lost Person">道に迷った人</option>
                 <option value="Patient">患者</option>
-                <option value="Student">生徒</option>
+                <option value="Myself">自分自身</option>
                 <option value="custom">✍️ その他 (自由入力)</option>
             </select>
             <input type="text" id="my-role-custom" class="hidden" placeholder="例: クレームを言う客">
@@ -104,7 +113,23 @@
             <input type="text" id="topic-custom" class="hidden" placeholder="例: 健康的な生活について">
         </div>
 
-        <!-- 共通項目：CEFRレベル -->
+        <!-- 瞬間英作文専用項目 -->
+        <div id="translation-fields" class="hidden">
+            <label>特訓したいテーマ・文法</label>
+            <select id="trans-focus" onchange="checkCustom('trans-focus')">
+                <option value="General (Random mix)">🎲 ランダム (総合)</option>
+                <option value="Basic Grammar (Middle School Level)">🏫 中学英語の総復習</option>
+                <option value="Past Tense & Future Tense">⏳ 過去形・未来形</option>
+                <option value="Prepositions (in, on, at...)">📍 前置詞 (in, on, atなど)</option>
+                <option value="Travel Phrases">✈️ 旅行で使えるフレーズ</option>
+                <option value="Business English">💼 ビジネス英語</option>
+                <option value="Keigo / Polite expressions">🤵 丁寧語・敬語表現</option>
+                <option value="custom">✍️ その他 (自由入力)</option>
+            </select>
+            <input type="text" id="trans-focus-custom" class="hidden" placeholder="例: 関係代名詞を使った文">
+        </div>
+
+        <!-- 共通項目 -->
         <label>英語レベル (CEFR基準)</label>
         <select id="level">
             <option value="A1 (Beginner)">A1 - 入門 (単語・挨拶レベル)</option>
@@ -134,10 +159,10 @@
         <label style="margin-top:0">生成されたプロンプト</label>
         <textarea id="output" readonly onclick="this.select()"></textarea>
         <button onclick="copyToClipboard()">📋 プロンプトをコピー</button>
+        <button onclick="resetSettings()" class="reset-btn" style="margin-top: 10px;">🗑️ 設定をリセット</button>
     </div>
 
     <script>
-        // 設定を保存してプロンプト生成
         function saveAndGenerate() {
             saveSettings();
             generatePrompt();
@@ -150,12 +175,19 @@
 
         function toggleMode() {
             const mode = document.querySelector('input[name="mode"]:checked').value;
+            
+            // 全てのフィールドを隠す
+            document.getElementById('roleplay-fields').classList.add('hidden');
+            document.getElementById('freetalk-fields').classList.add('hidden');
+            document.getElementById('translation-fields').classList.add('hidden');
+
+            // 選ばれたモードだけ表示
             if (mode === 'roleplay') {
                 document.getElementById('roleplay-fields').classList.remove('hidden');
-                document.getElementById('freetalk-fields').classList.add('hidden');
-            } else {
-                document.getElementById('roleplay-fields').classList.add('hidden');
+            } else if (mode === 'freetalk') {
                 document.getElementById('freetalk-fields').classList.remove('hidden');
+            } else if (mode === 'translation') {
+                document.getElementById('translation-fields').classList.remove('hidden');
             }
         }
 
@@ -170,9 +202,8 @@
             saveAndGenerate();
         }
 
-        // イベントリスナー登録（入力があるたびに保存＆生成）
         document.querySelectorAll('select, input').forEach(el => {
-            if(el.type !== 'radio') { // ラジオボタンは別途処理
+            if(el.type !== 'radio') {
                 el.addEventListener('input', saveAndGenerate);
             }
         });
@@ -198,7 +229,6 @@
                 const situation = getValue('situation');
                 const aiRole = getValue('ai-role');
                 const myRole = getValue('my-role');
-
                 prompt = `# Instruction
 I want to practice English conversation through role-playing.
 Please act according to the following settings.
@@ -216,9 +246,8 @@ Please act according to the following settings.
 4. If I make a mistake, please correct it briefly inside parentheses like this: (Correction: ...) after your reply.
 5. If using Voice Mode, please speak **${speed}**.`;
 
-            } else {
+            } else if (mode === 'freetalk') {
                 const topic = getValue('topic');
-
                 prompt = `# Instruction
 I want to have a free conversation about a specific topic to practice English.
 
@@ -234,6 +263,27 @@ ${topic}
 2. Reply with only 1-3 sentences at a time.
 3. Correct my grammar or vocabulary mistakes at the end of your response politely.
 4. If using Voice Mode, please speak **${speed}**.`;
+
+            } else if (mode === 'translation') {
+                const focus = getValue('trans-focus');
+                prompt = `# Instruction
+I want to practice "Instant English Composition" (Shunkan Eisakubun).
+Act as a strict but helpful English teacher.
+
+# Practice Mode
+You give me a Japanese sentence, and I must translate it into English instantly.
+
+# Settings
+- **Target Level**: ${level}
+- **Focus Area**: ${focus}
+
+# Rules
+1. Provide **one Japanese sentence** at a time based on the Focus Area.
+2. **Wait for my response** (do not provide the answer yet).
+3. After I speak, **grade my answer (0-100)**.
+4. Then, show the correct/natural English expression and explain briefly if needed.
+5. Immediately give me the **next** Japanese sentence.
+6. If using Voice Mode, please speak **${speed}**.`;
             }
 
             if (useVoiceMode) {
@@ -241,8 +291,10 @@ ${topic}
             } else {
                 if (mode === 'roleplay') {
                     prompt += `\n\nLet's start the role-play. You speak first.`;
-                } else {
+                } else if (mode === 'freetalk') {
                     prompt += `\n\nLet's start. Please ask me the first question about the topic.`;
+                } else {
+                    prompt += `\n\nLet's start. Please give me the first Japanese sentence.`;
                 }
             }
 
@@ -259,22 +311,26 @@ ${topic}
             setTimeout(() => { btn.innerText = originalText; }, 2000);
         }
 
+        function resetSettings() {
+            if(confirm("保存された設定をすべて削除してリセットしますか？")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
         // --- 設定保存機能 (LocalStorage) ---
 
         function saveSettings() {
-            // モード保存
             const mode = document.querySelector('input[name="mode"]:checked').value;
             localStorage.setItem('epg_mode', mode);
-
-            // チェックボックス保存
             localStorage.setItem('epg_voice', document.getElementById('voice-mode-check').checked);
 
-            // 全入力欄保存
             const ids = [
                 'situation', 'situation-custom',
                 'ai-role', 'ai-role-custom',
                 'my-role', 'my-role-custom',
                 'topic', 'topic-custom',
+                'trans-focus', 'trans-focus-custom',
                 'level', 'speed'
             ];
             ids.forEach(id => {
@@ -284,25 +340,23 @@ ${topic}
         }
 
         function loadSettings() {
-            // モード復元
             const savedMode = localStorage.getItem('epg_mode');
             if (savedMode) {
                 const radio = document.querySelector(`input[name="mode"][value="${savedMode}"]`);
                 if(radio) radio.checked = true;
             }
 
-            // チェックボックス復元
             const savedVoice = localStorage.getItem('epg_voice');
             if (savedVoice !== null) {
                 document.getElementById('voice-mode-check').checked = (savedVoice === 'true');
             }
 
-            // 入力欄復元
             const ids = [
                 'situation', 'situation-custom',
                 'ai-role', 'ai-role-custom',
                 'my-role', 'my-role-custom',
                 'topic', 'topic-custom',
+                'trans-focus', 'trans-focus-custom',
                 'level', 'speed'
             ];
             ids.forEach(id => {
@@ -313,13 +367,11 @@ ${topic}
                 }
             });
 
-            // 画面状態を更新
             toggleMode();
-            ['situation', 'ai-role', 'my-role', 'topic'].forEach(id => checkCustom(id));
+            ['situation', 'ai-role', 'my-role', 'topic', 'trans-focus'].forEach(id => checkCustom(id));
             generatePrompt();
         }
 
-        // ページ読み込み時に設定をロード
         window.addEventListener('load', loadSettings);
 
     </script>
