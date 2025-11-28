@@ -34,7 +34,7 @@
 </head>
 <body>
 
-    <h1>🇬🇧 英会話プロンプト生成</h1>
+    <h1>英会話プロンプト生成</h1>
 
     <!-- モード選択 -->
     <div class="radio-group">
@@ -240,14 +240,12 @@ ${topic}
             const copyText = document.getElementById("output");
             copyText.select();
             document.execCommand("copy");
-            // ボタンの文字を一瞬変更する演出
             const btn = document.querySelector("button");
             const originalText = btn.innerText;
             btn.innerText = "✅ コピー完了！";
             setTimeout(() => { btn.innerText = originalText; }, 2000);
         }
 
-        // 初期化
         generatePrompt();
     </script>
 
