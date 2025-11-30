@@ -182,7 +182,6 @@
         </div>
 
         <!-- 共通設定 -->
-        <!-- 瞬間英作文以外の時だけ有効になるように見せかけてますが、JavaScriptで制御します -->
         <div id="first-speaker-wrapper">
             <label>会話の開始 (どちらから話す？)</label>
             <select id="first-speaker" onchange="saveAndGenerate()">
@@ -203,7 +202,8 @@
 
         <label>AIの話す速度 (ボイスモード時)</label>
         <select id="speed">
-            <option value="slowly, pausing slightly between phrases">🐌 超ゆっくり (フレーズごとに区切る)</option>
+            <option value="extremely slowly, pausing between words">🐌 超・ゆっくり (単語ごとに区切る)</option>
+            <option value="slowly, pausing slightly between phrases">🚶‍♂️ ゆっくり (フレーズごとに区切る)</option>
             <option value="very slowly and clearly">🐢 とてもゆっくり</option>
             <option value="slowly">🚶 ゆっくり</option>
             <option value="at natural speed">🏃 普通 (ナチュラル)</option>
@@ -241,7 +241,6 @@
             document.getElementById('freetalk-fields').classList.add('hidden');
             document.getElementById('translation-fields').classList.add('hidden');
 
-            // 瞬間英作文のときは「開始設定」を隠す（常にAI先攻だから）
             const firstSpeakerWrapper = document.getElementById('first-speaker-wrapper');
             
             if (mode === 'roleplay') {
@@ -358,19 +357,17 @@ Act as a strict but helpful English teacher.
    - Step 5: Immediately move to the next question.`;
             }
 
-            // 開始シーケンスの制御（瞬間英作文は常にAI先攻）
             const isAiFirst = (mode === 'translation') || (firstSpeaker === 'ai');
 
             if (useVoiceMode) {
-                prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode and say "**Start**".`;
+                prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode.`;
                 
                 if (mode === 'translation') {
-                    // 瞬間英作文用の開始指示
-                    prompt += ` Then, **start Question 1 immediately** (You speak first).`;
+                    prompt += ` Then, I will say "**Hello**" or "**Hi**". Please **start Question 1 immediately** (You speak first).`;
                 } else if (isAiFirst) {
-                    prompt += ` Then, **you speak the first sentence** to start the conversation.`;
+                    prompt += ` Then, I will say "**Hello**" or "**Hi**". Please **speak the first sentence** to start the conversation.`;
                 } else {
-                    prompt += ` Then, just reply "**Go ahead**" and **wait for me to speak first**.`;
+                    prompt += ` Then, **I will speak the first sentence immediately**. Please wait for my input and respond naturally.`;
                 }
 
             } else {
@@ -454,4 +451,5 @@ Act as a strict but helpful English teacher.
 
     </script>
 
-</body
+</body>
+</html>
