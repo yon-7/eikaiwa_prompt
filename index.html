@@ -202,8 +202,7 @@
 
         <label>AIの話す速度 (ボイスモード時)</label>
         <select id="speed">
-            <option value="extremely slowly, pausing between words">🐌 超・ゆっくり (単語ごとに区切る)</option>
-            <option value="slowly, pausing slightly between phrases">🚶‍♂️ ゆっくり (フレーズごとに区切る)</option>
+            <option value="extremely slowly, pausing slightly between phrases">🐌 超ゆっくり (フレーズごとに区切る)</option>
             <option value="very slowly and clearly">🐢 とてもゆっくり</option>
             <option value="slowly">🚶 ゆっくり</option>
             <option value="at natural speed">🏃 普通 (ナチュラル)</option>
@@ -362,10 +361,13 @@ Act as a strict but helpful English teacher.
             if (useVoiceMode) {
                 prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode.`;
                 
+                // トリガーワードを定義
+                const triggers = '"**Hello**", "**Hi**", "**Start**", or "**Action**"';
+
                 if (mode === 'translation') {
-                    prompt += ` Then, I will say "**Hello**" or "**Hi**". Please **start Question 1 immediately** (You speak first).`;
+                    prompt += ` Then, I will say ${triggers}. Please **start Question 1 immediately** (You speak first).`;
                 } else if (isAiFirst) {
-                    prompt += ` Then, I will say "**Hello**" or "**Hi**". Please **speak the first sentence** to start the conversation.`;
+                    prompt += ` Then, I will say ${triggers}. Please **speak the first sentence** to start the conversation.`;
                 } else {
                     prompt += ` Then, **I will speak the first sentence immediately**. Please wait for my input and respond naturally.`;
                 }
