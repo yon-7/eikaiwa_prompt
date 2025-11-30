@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英会話プロンプト作成</title>
+    <title>英会話プロンプト生成</title>
     
     <!-- スマホ用アイコン設定 (緑色の背景にEの文字) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2328a745'/><text x='50' y='70' font-family='Arial, sans-serif' font-weight='bold' font-size='70' fill='white' text-anchor='middle'>E</text></svg>">
@@ -17,15 +17,14 @@
         select, input[type="text"] { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: #fff; -webkit-appearance: none; }
         .hidden { display: none; }
         
-        /* --- モード選択ボタンの改善 --- */
+        /* モード選択ボタンのデザイン */
         .radio-group { 
             display: grid; 
-            grid-template-columns: 1fr; /* スマホ: 縦1列 */
+            grid-template-columns: 1fr; 
             gap: 10px; 
             margin-bottom: 20px; 
         }
         
-        /* PC/タブレット(画面幅500px以上): 横3列にする */
         @media (min-width: 500px) {
             .radio-group { 
                 grid-template-columns: 1fr 1fr 1fr; 
@@ -44,15 +43,14 @@
             font-size: 0.95em; 
             font-weight: bold; 
             color: #555; 
-            background: #fff; /* スマホ: 白背景のボタン */
-            border: 1px solid #ddd; /* スマホ: 枠線あり */
+            background: #fff;
+            border: 1px solid #ddd;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* PCでの見た目調整 */
         @media (min-width: 500px) {
             .radio-label {
                 background: transparent;
@@ -63,9 +61,8 @@
 
         input[type="radio"] { display: none; }
         
-        /* 選択された時のデザイン */
         input[type="radio"]:checked + .radio-label { 
-            background: #e7f5ea; /* 薄い緑 */
+            background: #e7f5ea;
             color: #28a745; 
             border-color: #28a745; 
             box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
@@ -78,7 +75,6 @@
                 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
         }
-        /* ----------------------- */
 
         textarea { width: 100%; height: 200px; padding: 12px; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; font-family: monospace; font-size: 13px; box-sizing: border-box; resize: none; margin-top: 5px; }
         
@@ -93,11 +89,11 @@
 
     <h1>英会話プロンプト生成</h1>
 
-    <!-- モード選択 (スマホ対応版) -->
+    <!-- モード選択 -->
     <div class="radio-group">
         <label>
             <input type="radio" name="mode" value="roleplay" checked onchange="handleModeChange()">
-            <span class="radio-label">🎭 ロールプレイ</span>
+            <span class="radio-label">🎬 ロールプレイ</span>
         </label>
         <label>
             <input type="radio" name="mode" value="freetalk" onchange="handleModeChange()">
@@ -185,7 +181,13 @@
             <input type="text" id="trans-focus-custom" class="hidden" placeholder="例: 関係代名詞を使った文">
         </div>
 
-        <!-- 共通項目 -->
+        <!-- 共通設定 -->
+        <label>会話の開始 (どちらから話す？)</label>
+        <select id="first-speaker" onchange="saveAndGenerate()">
+            <option value="ai">🤖 AIから話しかける (AI speaks first)</option>
+            <option value="user">🙋‍♂️ 自分から話しかける (I speak first)</option>
+        </select>
+
         <label>英語レベル (CEFR基準)</label>
         <select id="level">
             <option value="A1 (Beginner)">A1 - 入門 (単語・挨拶レベル)</option>
@@ -231,12 +233,10 @@
         function toggleMode() {
             const mode = document.querySelector('input[name="mode"]:checked').value;
             
-            // 全てのフィールドを隠す
             document.getElementById('roleplay-fields').classList.add('hidden');
             document.getElementById('freetalk-fields').classList.add('hidden');
             document.getElementById('translation-fields').classList.add('hidden');
 
-            // 選ばれたモードだけ表示
             if (mode === 'roleplay') {
                 document.getElementById('roleplay-fields').classList.remove('hidden');
             } else if (mode === 'freetalk') {
@@ -277,6 +277,7 @@
             const level = document.getElementById('level').value;
             const speed = document.getElementById('speed').value;
             const useVoiceMode = document.getElementById('voice-mode-check').checked;
+            const firstSpeaker = document.getElementById('first-speaker').value;
 
             let prompt = "";
 
@@ -341,13 +342,23 @@ You give me a Japanese sentence, and I must translate it into English instantly.
 6. If using Voice Mode, please speak **${speed}**.`;
             }
 
+            // 開始シーケンスの制御（瞬間英作文は常にAI先攻）
+            const isAiFirst = (mode === 'translation') || (firstSpeaker === 'ai');
+
             if (useVoiceMode) {
-                prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode and say "**Start**", then you speak the first sentence.`;
+                prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode and say "**Start**".`;
+                
+                if (isAiFirst) {
+                    prompt += ` Then, **you speak the first sentence** to start the conversation.`;
+                } else {
+                    prompt += ` Then, just reply "**Go ahead**" and **wait for me to speak first**.`;
+                }
+
             } else {
                 if (mode === 'roleplay') {
-                    prompt += `\n\nLet's start the role-play. You speak first.`;
+                    prompt += isAiFirst ? `\n\nLet's start the role-play. You speak first.` : `\n\nLet's start the role-play. I will speak first. Wait for my input.`;
                 } else if (mode === 'freetalk') {
-                    prompt += `\n\nLet's start. Please ask me the first question about the topic.`;
+                    prompt += isAiFirst ? `\n\nLet's start. Please ask me the first question about the topic.` : `\n\nLet's start. I will speak first about the topic.`;
                 } else {
                     prompt += `\n\nLet's start. Please give me the first Japanese sentence.`;
                 }
@@ -366,8 +377,6 @@ You give me a Japanese sentence, and I must translate it into English instantly.
             setTimeout(() => { btn.innerText = originalText; }, 2000);
         }
 
-        // --- 設定保存機能 (LocalStorage) ---
-
         function saveSettings() {
             const mode = document.querySelector('input[name="mode"]:checked').value;
             localStorage.setItem('epg_mode', mode);
@@ -379,6 +388,7 @@ You give me a Japanese sentence, and I must translate it into English instantly.
                 'my-role', 'my-role-custom',
                 'topic', 'topic-custom',
                 'trans-focus', 'trans-focus-custom',
+                'first-speaker',
                 'level', 'speed'
             ];
             ids.forEach(id => {
@@ -405,6 +415,7 @@ You give me a Japanese sentence, and I must translate it into English instantly.
                 'my-role', 'my-role-custom',
                 'topic', 'topic-custom',
                 'trans-focus', 'trans-focus-custom',
+                'first-speaker',
                 'level', 'speed'
             ];
             ids.forEach(id => {
