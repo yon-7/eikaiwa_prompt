@@ -352,10 +352,11 @@ Act as a strict but helpful English teacher.
 3. **Step-by-Step Process (Repeat loop)**:
    - Step 1: Say the Question Number and the **Japanese sentence** (Natural speed).
    - Step 2: **Wait** for my translation.
-   - Step 3: **Read the correct English sentence aloud** clearly (${speed}). DO NOT grade.
+   - Step 3: **Read the correct English sentence aloud** clearly (${speed}).
    - Step 4: **Immediately** go to Step 1 for the next question (No pause, no "Next question" announcement, just say the number and Japanese).`;
             }
 
+            // --- 開始シーケンスの制御 ---
             const isAiFirst = (mode === 'translation') || (firstSpeaker === 'ai');
 
             if (useVoiceMode) {
