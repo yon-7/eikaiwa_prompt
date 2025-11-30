@@ -341,19 +341,19 @@ Act as a strict but helpful English teacher.
 
 # Rules
 1. **Game Flow**: 
-   - Keep track of the question number and my score.
-   - **After every 10 questions**, calculate and announce the **average score** of those 10 questions, then ask "Do you want to continue?".
+   - Keep counting the questions (Q1, Q2, ...).
+   - **Continuous Flow**: Do not stop after every question.
+   - **Checkpoint**: Only **after every 10 questions** (Q10, Q20...), pause and ask "Do you want to continue?".
 
 2. **Speaking Speed (Important)**:
    - **Japanese (Question)**: Always speak at **NATURAL speed** (standard).
    - **English (Answer/Feedback)**: Speak **${speed}**.
 
-3. **Step-by-Step Process**:
+3. **Step-by-Step Process (Repeat loop)**:
    - Step 1: Say the Question Number and the **Japanese sentence** (Natural speed).
    - Step 2: **Wait** for my translation.
-   - Step 3: Grade my answer (0-100).
-   - Step 4: **Read the correct English sentence aloud** clearly (${speed}).
-   - Step 5: Immediately move to the next question.`;
+   - Step 3: **Read the correct English sentence aloud** clearly (${speed}). DO NOT grade.
+   - Step 4: **Immediately** go to Step 1 for the next question (No pause, no "Next question" announcement, just say the number and Japanese).`;
             }
 
             const isAiFirst = (mode === 'translation') || (firstSpeaker === 'ai');
@@ -361,7 +361,6 @@ Act as a strict but helpful English teacher.
             if (useVoiceMode) {
                 prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode.`;
                 
-                // トリガーワードを定義
                 const triggers = '"**Hello**", "**Hi**", "**Start**", or "**Action**"';
 
                 if (mode === 'translation') {
