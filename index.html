@@ -293,6 +293,7 @@
                 const situation = getValue('situation');
                 const aiRole = getValue('ai-role');
                 const myRole = getValue('my-role');
+                // ロールプレイ
                 prompt = `# Instruction
 I want to practice English conversation through role-playing.
 Please act according to the following settings.
@@ -312,6 +313,7 @@ Please act according to the following settings.
 
             } else if (mode === 'freetalk') {
                 const topic = getValue('topic');
+                // フリートーク
                 prompt = `# Instruction
 I want to have a free conversation about a specific topic to practice English.
 
@@ -330,6 +332,7 @@ ${topic}
 
             } else if (mode === 'translation') {
                 const focus = getValue('trans-focus');
+                // 瞬間英作文
                 prompt = `# Instruction
 I want to practice "Instant English Composition" (Shunkan Eisakubun).
 Act as a strict but helpful English teacher.
