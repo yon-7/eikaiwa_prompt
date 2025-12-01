@@ -366,17 +366,17 @@ Act as a strict but helpful English teacher.
 3. **Step-by-Step Process (Repeat loop)**:
    - Step 1: Say the Question Number and the **Japanese sentence** (Natural speed).
    - Step 2: **Wait** for my translation.
-   - Step 3: **Read the correct English sentence aloud** clearly (${speed}).
-   - Step 4: **Immediately** go to Step 1 for the next question (No pause, no "Next question" announcement, just say the number and Japanese).`;
+   - Step 3: **Feedback**: Briefly evaluate my answer. If incorrect, point out the mistake. If correct but unnatural, suggest a better expression.
+   - Step 4: **Read the correct English sentence aloud** clearly (${speed}).
+   - Step 5: **Immediately** go to Step 1 for the next question (No pause, just say the number and Japanese).`;
             }
 
-            // --- 開始シーケンスの制御 ---
             const isAiFirst = (mode === 'translation') || (firstSpeaker === 'ai');
 
             if (useVoiceMode) {
                 prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode.`;
                 
-                const triggers = '"**Hello**", "**Hi**", "**Start**", or "**Action**"';
+                const triggers = '"**Hello**", "**Hi**", "**Hey**", "**Ready**", "**Go**", "**Start**", or "**OK**"';
 
                 if (mode === 'translation') {
                     prompt += ` Then, I will say ${triggers}. Please **start Question 1 immediately** (You speak first).`;
