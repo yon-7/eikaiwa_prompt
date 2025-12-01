@@ -343,32 +343,30 @@ ${topic}
 
             } else if (mode === 'translation') {
                 const focus = getValue('trans-focus');
-                // 瞬間英作文
+                // 瞬間英作文：英語はすべて設定速度、日本語はナチュラル
                 prompt = `# Instruction
 I want to practice "Instant English Composition" (Shunkan Eisakubun).
-Act as a strict but helpful English teacher.
 
 # Settings
 - **Target Level**: ${level}
 - **Focus Area**: ${focus}
-- **Speaking Speed (English)**: ${speed}
+- **English Speaking Speed**: ${speed}
 
-# Rules
-1. **Game Flow**: 
-   - Keep counting the questions (Q1, Q2, ...).
-   - **Continuous Flow**: Do not stop after every question.
-   - **Checkpoint**: Only **after every 10 questions** (Q10, Q20...), pause and ask "Do you want to continue?".
+# Voice Mode Rules (Crucial)
+1. **No Labels**: **DO NOT** read headers like "Feedback", "Answer", or "Q1". Just speak the content naturally.
+2. **Language & Speed Control**:
+   - **Japanese (Question)**: Speak naturally as a native Japanese speaker (Standard speed).
+   - **English (All parts)**: When speaking English (Feedback, Explanation, and Model Answer), you **MUST** speak **${speed}**.
 
-2. **Speaking Speed (Important)**:
-   - **Japanese (Question)**: Always speak at **NATURAL speed** (standard).
-   - **English (Answer/Feedback)**: Speak **${speed}**.
-
-3. **Step-by-Step Process (Repeat loop)**:
-   - Step 1: Say the Question Number and the **Japanese sentence** (Natural speed).
-   - Step 2: **Wait** for my translation.
-   - Step 3: **Feedback**: First, evaluate my answer. If incorrect, briefly explain the mistake. If correct but unnatural, suggest a better expression.
-   - Step 4: **Model Answer**: Read the ideal English sentence aloud clearly (${speed}).
-   - Step 5: **Next Question**: Immediately go to Step 1 for the next question (No pause, just say the number and Japanese).`;
+# Step-by-Step Loop
+1. **Question**: Say "Question [N]" then read the **Japanese sentence** (Natural native Japanese intonation).
+2. **Wait**: Wait for my translation.
+3. **Feedback**: Briefly evaluate my answer. If incorrect, point out the mistake.
+   - **Speed**: Speak this English feedback **${speed}**.
+4. **Model Answer**: Read the correct English sentence.
+   - **Speed**: Speak the model answer **${speed}**.
+5. **Next**: Immediately go to Step 1 for the next question.
+   - Pause only after every 10 questions to check progress.`;
             }
 
             const isAiFirst = (mode === 'translation') || (firstSpeaker === 'ai');
