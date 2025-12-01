@@ -366,9 +366,9 @@ Act as a strict but helpful English teacher.
 3. **Step-by-Step Process (Repeat loop)**:
    - Step 1: Say the Question Number and the **Japanese sentence** (Natural speed).
    - Step 2: **Wait** for my translation.
-   - Step 3: **Feedback**: Briefly evaluate my answer. If incorrect, point out the mistake. If correct but unnatural, suggest a better expression.
-   - Step 4: **Read the correct English sentence aloud** clearly (${speed}).
-   - Step 5: **Immediately** go to Step 1 for the next question (No pause, just say the number and Japanese).`;
+   - Step 3: **Feedback**: First, evaluate my answer. If incorrect, briefly explain the mistake. If correct but unnatural, suggest a better expression.
+   - Step 4: **Model Answer**: Read the ideal English sentence aloud clearly (${speed}).
+   - Step 5: **Next Question**: Immediately go to Step 1 for the next question (No pause, just say the number and Japanese).`;
             }
 
             const isAiFirst = (mode === 'translation') || (firstSpeaker === 'ai');
