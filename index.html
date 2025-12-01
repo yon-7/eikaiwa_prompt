@@ -343,7 +343,7 @@ ${topic}
 
             } else if (mode === 'translation') {
                 const focus = getValue('trans-focus');
-                // 瞬間英作文：英語はすべて設定速度、日本語はナチュラル
+                // 瞬間英作文
                 prompt = `# Instruction
 I want to practice "Instant English Composition" (Shunkan Eisakubun).
 
@@ -352,8 +352,8 @@ I want to practice "Instant English Composition" (Shunkan Eisakubun).
 - **Focus Area**: ${focus}
 - **English Speaking Speed**: ${speed}
 
-# Voice Mode Rules (Crucial)
-1. **No Labels**: **DO NOT** read headers like "Feedback", "Answer", or "Q1". Just speak the content naturally.
+# Voice Mode Rules
+1. **No Structural Labels**: **DO NOT** say words like "Feedback:" or "Model Answer:" before speaking. Just speak the content directly.
 2. **Language & Speed Control**:
    - **Japanese (Question)**: Speak naturally as a native Japanese speaker (Standard speed).
    - **English (All parts)**: When speaking English (Feedback, Explanation, and Model Answer), you **MUST** speak **${speed}**.
@@ -361,10 +361,11 @@ I want to practice "Instant English Composition" (Shunkan Eisakubun).
 # Step-by-Step Loop
 1. **Question**: Say "Question [N]" then read the **Japanese sentence** (Natural native Japanese intonation).
 2. **Wait**: Wait for my translation.
-3. **Feedback**: Briefly evaluate my answer. If incorrect, point out the mistake.
-   - **Speed**: Speak this English feedback **${speed}**.
+3. **Feedback**:
+   - Briefly evaluate my answer (e.g., "Good", "Close", "Grammar mistake").
+   - If incorrect, briefly explain the error (e.g., "Use past tense here").
+   - **IMPORTANT**: **DO NOT** recite the full correct sentence in this step (to avoid repetition).
 4. **Model Answer**: Read the correct English sentence.
-   - **Speed**: Speak the model answer **${speed}**.
 5. **Next**: Immediately go to Step 1 for the next question.
    - Pause only after every 10 questions to check progress.`;
             }
@@ -374,7 +375,7 @@ I want to practice "Instant English Composition" (Shunkan Eisakubun).
             if (useVoiceMode) {
                 prompt += `\n\n# Start Sequence\n**Do not start the conversation yet.** Just reply with "**Ready**" in text.\nI will switch to Voice Mode.`;
                 
-                const triggers = '"**Hello**", "**Hi**", "**Hey**", "**Ready**", "**Go**", "**Start**", or "**OK**"';
+                const triggers = '"**Hello**", "**Hi**", "**Hey**", "**OK**", or "**Start**"';
 
                 if (mode === 'translation') {
                     prompt += ` Then, I will say ${triggers}. Please **start Question 1 immediately** (You speak first).`;
